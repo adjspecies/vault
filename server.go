@@ -1,7 +1,13 @@
-package main
+package vault
 
-import "fmt"
+import (
+    "net/http"
+)
 
-func main() {
-    fmt.Println("stub")
+func NewServer(p Params) (http.Handler, error) {
+    return nil, nil
+}
+
+type Params struct {
+    
 }
