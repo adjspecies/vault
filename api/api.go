@@ -11,12 +11,14 @@ import (
 	"github.com/adjspecies/vault/api/v1"
 )
 
+// Register adds handlers for the various API versions.
 func Register(r *mux.Router) error {
 	r.HandleFunc("/", Status)
 	v1.Register(r.PathPrefix("/api/v1").Subrouter())
 	return nil
 }
 
+// Status shows the status of the service and all of its connections.
 func Status(w http.ResponseWriter, r *http.Request) {
 
 }

@@ -14,13 +14,14 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
+// Config holds the values within a YAML configuration file
 type Config struct {
 	Host     string        `yaml:"host"`
 	Port     int           `yaml:"port"`
 	LogLevel zapcore.Level `yaml:"log-level"`
 }
 
-// Read loads a YAML config file into an object
+// Read loads a YAML config file into a Config object.
 func Read(path string) (*Config, error) {
 	f, err := os.Open(path)
 	if err != nil {
@@ -42,6 +43,7 @@ func Read(path string) (*Config, error) {
 	return &config, nil
 }
 
+// validate checks that the configuration file provided is valid.
 func validate(c Config) error {
 	var missing []string
 	if c.Host == "" {
