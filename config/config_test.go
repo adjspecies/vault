@@ -23,7 +23,7 @@ var readTests = []struct {
 	expectedError  string
 }{
 	{
-		about: "valid config",
+		about: "when the config is valid",
 		content: mustMarshalYAML(map[string]interface{}{
 			"host":      "localhost",
 			"port":      5542,
@@ -36,12 +36,12 @@ var readTests = []struct {
 		},
 	},
 	{
-		about:         "unreadable config",
+		about:         "config is unreadable",
 		content:       []byte("bad wolf"),
 		expectedError: "unable to parse config file",
 	},
 	{
-		about: "invalid config",
+		about: "config is invalid",
 		content: mustMarshalYAML(map[string]interface{}{
 			"bad": "wolf",
 			"not": 42,
@@ -51,7 +51,7 @@ var readTests = []struct {
 }
 
 func TestRead(t *testing.T) {
-	Convey("A config file should be able to be parsed", t, func() {
+	Convey("It should be able to parse a config file", t, func() {
 		for _, test := range readTests {
 			Convey(fmt.Sprintf("...%s", test.about), func() {
 				// Set up a temp file
