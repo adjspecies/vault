@@ -4,13 +4,17 @@
 package vault
 
 import (
-    "net/http"
+	"net/http"
+
+	"github.com/gorilla/mux"
+
+	"github.com/adjspecies/vault/api"
 )
 
-func NewServer(p Params) (http.Handler, error) {
-    return nil, nil
-}
-
-type Params struct {
-
+func NewServer() (http.Handler, error) {
+	r := mux.NewRouter()
+	if err := api.Register(r); err != nil {
+		return nil, err
+	}
+	return r, nil
 }

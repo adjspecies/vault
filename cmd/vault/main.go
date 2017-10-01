@@ -4,14 +4,17 @@
 package main
 
 import (
-    "path/filepath"
-    "flag"
-    "fmt"
-    "os"
+	"flag"
+	"fmt"
+	"net/http"
+	"os"
+	"path/filepath"
 
-    "gopkg.in/errgo.v1"
+	"gopkg.in/errgo.v1"
 
-    "github.com/adjspecies/vault"
+	"github.com/adjspecies/vault"
+	"github.com/adjspecies/vault/config"
+	"github.com/adjspecies/vault/logging"
 )
 
 func main() {
@@ -24,17 +27,25 @@ func main() {
 	if flag.NArg() != 1 {
 		flag.Usage()
 	}
-    if err := serve(flag.Arg(0)); err != nil {
+	if err := serve(flag.Arg(0)); err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
 		os.Exit(1)
-    }
+	}
 }
 
 func serve(configPath string) error {
-    params := vault.Params{}
-    _, err := vault.NewServer(params)
-    if err != nil {
-        return errgo.Notef(err, "Could not create server")
-    }
-    return nil
+	conf, err := config.Read(configPath)
+	if err != nil {
+		return errgo.Notef(err, "cannot load configuration file")
+	}
+	if err := logging.Setup(conf.LogLevel); err != nil {
+		return errgo.Notef(err, "unable to set up logging")
+	}
+	log := logging.Logger()
+	defer log.Sync()
+	handler, err := vault.NewServer()
+	if err != nil {
+		return errgo.Notef(err, "Could not create server")
+	}
+	return http.ListenAndServe(fmt.Sprintf("%s:%d", conf.Host, conf.Port), handler)
 }
