@@ -38,7 +38,7 @@ func serve(configPath string) error {
 	if err != nil {
 		return errgo.Notef(err, "cannot load configuration file")
 	}
-	if err := logging.Setup(conf.LogLevel); err != nil {
+	if errSetup := logging.Setup(conf.LogLevel); errSetup != nil {
 		return errgo.Notef(err, "unable to set up logging")
 	}
 	log := logging.Logger()
@@ -47,5 +47,6 @@ func serve(configPath string) error {
 	if err != nil {
 		return errgo.Notef(err, "Could not create server")
 	}
+	log.Infow("starting server", "host", conf.Host, "port", conf.Port)
 	return http.ListenAndServe(fmt.Sprintf("%s:%d", conf.Host, conf.Port), handler)
 }

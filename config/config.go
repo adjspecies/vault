@@ -48,7 +48,7 @@ func validate(c Config) error {
 		missing = append(missing, "host")
 	}
 	if c.Port == 0 {
-		missing = append(missing, "host")
+		missing = append(missing, "port")
 	}
 	if len(missing) != 0 {
 		return fmt.Errorf("missing fields %s", strings.Join(missing, ", "))
