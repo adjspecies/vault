@@ -16,18 +16,22 @@ Provides an overview of the system: A status and message, plus a simplified hier
                     "slug": "adjspecies",
                     "sources": [
                         {
+                            "type": "source",
                             "name": "The Furry Poll",
                             "slug": "furrypoll"
                             "sources": {
+                                "type": "source",
                                 "name": "Mega polls",
                                 "slug": "megapolls",
                                 "sources": {
+                                    "type": "source",
                                     "name": "Mega polls - 2018",
                                     "slug": "megapolls2018"
                                 }
                             }
                         },
                         {
+                            "type": "source",
                             "name": "Microsurveys",
                             "slug": "microsurveys"
                         }
@@ -73,6 +77,7 @@ Provides an in-depth view of a source and all of its component surveys, plus a h
             "link": "http://mega.furrypoll.com//2018",
             "surveys": [
                 {
+                    "type": "survey",
                     "name": "Demographics",
                     "slug": "demographics",
                     "start_date": ...,
@@ -80,6 +85,7 @@ Provides an in-depth view of a source and all of its component surveys, plus a h
                     "description": "..."
                 },
                 {
+                    "type": "survey",
                     "name": "Species",
                     "slug": "species",
                     "start_date": ...,
@@ -186,6 +192,12 @@ Provides an overview of a survey and its hierarchy.
                     "key": "age",
                     "text": "What is your age?"
                 },
+                {
+                    "type": "list",
+                    "key": "color",
+                    "text": "What is your favorite color?",
+                    "items": ["red", "blue", "green", "infrablack"]
+                }
                 ...
             ],
             "hierarchy": {
@@ -246,19 +258,19 @@ Dumps the questions and answers for a survey (example with `touchpoints` set to 
                             "value": 42
                         },
                         ...
+                    ],
+                    "touchpoints" [
+                        {
+                            "type": "start",
+                            "value": "",
+                            "when": ...
+                        },
+                        {
+                            "type": "answer",
+                            "value": "1", //question 1
+                            "when": ...
+                        }
                     ]
-                }
-            ],
-            "touchpoints" [
-                {
-                    "type": "start",
-                    "value": "",
-                    "date_time": ...
-                },
-                {
-                    "type": "answer",
-                    "value": "1", //question 1
-                    "date_time": ...
                 }
             ]
         }
@@ -273,7 +285,7 @@ Params:
 
 Dumps the questions and answers for a survey into CSV format. Lists and objects will be omitted unless requested, then they will be represented as JSON.
 
-### GET /api/v2/respondent/<respondent>
+### GET /api/v1/respondent/<respondent>
 
 Retrieves information about a respondent.
 
@@ -286,10 +298,12 @@ Retrieves information about a respondent.
             "responses": [
                 {
                     "survey": {
+                        "type": "survey",
                         "name": "Demographics",
                         "slug": "demographics"
                     },
                     "source": {
+                        "type": "source",
                         "name": "Mega polls - 2018",
                         "slug": "megapolls2018"
                     }
