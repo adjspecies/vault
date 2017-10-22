@@ -11,6 +11,14 @@ import (
 
 var logger *zap.SugaredLogger
 
+func LevelFromString(levelString string) (zapcore.Level, error) {
+	var level zapcore.Level
+	if err := level.UnmarshalText([]byte(levelString)); err != nil {
+		return level, err
+	}
+	return level, nil
+}
+
 // Setup builds a sugared logger for use throughout the application.
 func Setup(level zapcore.Level) error {
 	cfg := zap.NewProductionConfig()
