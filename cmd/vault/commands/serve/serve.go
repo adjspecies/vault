@@ -14,23 +14,23 @@ import (
 	errgo "gopkg.in/errgo.v1"
 )
 
-type ServeCommand struct {
-	cfg *config.Config
-}
+type ServeCommand command.BaseCommand
 
+// Init initializes the command
 func (cmd *ServeCommand) Init(cfg *config.Config, args []string) error {
-	cmd.cfg = cfg
+	cmd.Config = cfg
 	return nil
 }
 
+// Run starts the server.
 func (cmd *ServeCommand) Run() error {
 	log := logging.Logger()
 	handler, err := vault.NewServer()
 	if err != nil {
 		return errgo.Notef(err, "Could not create server")
 	}
-	log.Infow("starting server", "host", cmd.cfg.Host, "port", cmd.cfg.Port)
-	return http.ListenAndServe(fmt.Sprintf("%s:%d", cmd.cfg.Host, cmd.cfg.Port), handler)
+	log.Infow("starting server", "host", cmd.Config.Host, "port", cmd.Config.Port)
+	return http.ListenAndServe(fmt.Sprintf("%s:%d", cmd.Config.Host, cmd.Config.Port), handler)
 }
 
 func NewServeCommand() *command.RegisteredCommand {

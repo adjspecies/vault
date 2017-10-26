@@ -4,8 +4,6 @@
 package logging
 
 import (
-	"fmt"
-
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	errgo "gopkg.in/errgo.v1"
@@ -16,7 +14,6 @@ var logger *zap.SugaredLogger
 // Setup builds a sugared logger for use throughout the application.
 func Setup(level zapcore.Level) error {
 	cfg := zap.NewProductionConfig()
-	fmt.Println(level)
 	cfg.Level.SetLevel(level)
 	log, err := cfg.Build()
 	if err != nil {

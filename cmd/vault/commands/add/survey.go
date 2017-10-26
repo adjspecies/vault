@@ -8,15 +8,15 @@ import (
 	"github.com/adjspecies/vault/config"
 )
 
-type AddSurveyCommand struct {
-	cfg *config.Config
-}
+type AddSurveyCommand command.BaseCommand
 
+// Init initializes the command
 func (cmd AddSurveyCommand) Init(cfg *config.Config, args []string) error {
-	cmd.cfg = cfg
+	cmd.Config = cfg
 	return nil
 }
 
+// Run runs the command
 func (cmd AddSurveyCommand) Run() error {
 	return nil
 }

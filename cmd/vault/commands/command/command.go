@@ -7,6 +7,10 @@ import (
 	"github.com/adjspecies/vault/config"
 )
 
+type BaseCommand struct {
+	Config *config.Config
+}
+
 type Command interface {
 	Init(*config.Config, []string) error
 	Run() error

@@ -11,13 +11,11 @@ import (
 // AddSourceToSourceCommand controls adding one source to another in the
 // hierarchy. This only adds a child to a parent; all other relationships are
 // sussed out by Vault.
-type AddSourceToSourceCommand struct {
-	cfg *config.Config
-}
+type AddSourceToSourceCommand command.BaseCommand
 
 // Init initializes the command.
 func (cmd AddSourceToSourceCommand) Init(cfg *config.Config, args []string) error {
-	cmd.cfg = cfg
+	cmd.Config = cfg
 	return nil
 }
 
@@ -40,13 +38,11 @@ func NewAddSourceToSourceCommand() *command.RegisteredCommand {
 // RemoveSourceFromSourceCommand controls removing one source from another in
 // the hierarchy. This only adds a child to a parent; all other relationships
 // are sussed out by Vault.
-type RemoveSourceFromSourceCommand struct {
-	cfg *config.Config
-}
+type RemoveSourceFromSourceCommand command.BaseCommand
 
 // Init initializes the command.
 func (cmd RemoveSourceFromSourceCommand) Init(cfg *config.Config, args []string) error {
-	cmd.cfg = cfg
+	cmd.Config = cfg
 	return nil
 }
 

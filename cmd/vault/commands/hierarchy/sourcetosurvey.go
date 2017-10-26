@@ -11,13 +11,11 @@ import (
 // AddSurveyToSourceCommand controls adding one source to another in the
 // hierarchy. This only adds a child to a parent; all other relationships are
 // sussed out by Vault.
-type AddSurveyToSourceCommand struct {
-	cfg *config.Config
-}
+type AddSurveyToSourceCommand command.BaseCommand
 
 // Init initializes the command.
 func (cmd AddSurveyToSourceCommand) Init(cfg *config.Config, args []string) error {
-	cmd.cfg = cfg
+	cmd.Config = cfg
 	return nil
 }
 
@@ -40,13 +38,11 @@ func NewAddSurveyToSourceCommand() *command.RegisteredCommand {
 // RemoveSurveyFromSourceCommand controls removing one source from another in
 // the hierarchy. This only adds a child to a parent; all other relationships
 // are sussed out by Vault.
-type RemoveSurveyFromSourceCommand struct {
-	cfg *config.Config
-}
+type RemoveSurveyFromSourceCommand command.BaseCommand
 
 // Init initializes the command.
 func (cmd RemoveSurveyFromSourceCommand) Init(cfg *config.Config, args []string) error {
-	cmd.cfg = cfg
+	cmd.Config = cfg
 	return nil
 }
 
