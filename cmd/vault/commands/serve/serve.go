@@ -4,7 +4,6 @@
 package serve
 
 import (
-	"flag"
 	"fmt"
 	"net/http"
 
@@ -15,42 +14,30 @@ import (
 	errgo "gopkg.in/errgo.v1"
 )
 
-type ServeCommand struct{}
+type ServeCommand struct {
+	cfg *config.Config
+}
 
-func (cmd *ServeCommand) Init(args []string) error {
+func (cmd *ServeCommand) Init(cfg *config.Config, args []string) error {
+	cmd.cfg = cfg
 	return nil
 }
 
 func (cmd *ServeCommand) Run() error {
-	if err := serve(flag.Arg(0)); err != nil {
-		return err
-	}
-	return nil
-}
-
-func NewServeCommand() *command.RegisteredCommand {
-	return &command.RegisteredCommand{
-		Name:    "Vault server",
-		Command: "serve",
-		Help:    ``,
-		Entry:   &ServeCommand{},
-	}
-}
-
-func serve(configPath string) error {
-	conf, err := config.Read(configPath)
-	if err != nil {
-		return errgo.Notef(err, "cannot load configuration file")
-	}
-	if errSetup := logging.Setup(conf.LogLevel); errSetup != nil {
-		return errgo.Notef(err, "unable to set up logging")
-	}
 	log := logging.Logger()
-	defer log.Sync()
 	handler, err := vault.NewServer()
 	if err != nil {
 		return errgo.Notef(err, "Could not create server")
 	}
-	log.Infow("starting server", "host", conf.Host, "port", conf.Port)
-	return http.ListenAndServe(fmt.Sprintf("%s:%d", conf.Host, conf.Port), handler)
+	log.Infow("starting server", "host", cmd.cfg.Host, "port", cmd.cfg.Port)
+	return http.ListenAndServe(fmt.Sprintf("%s:%d", cmd.cfg.Host, cmd.cfg.Port), handler)
+}
+
+func NewServeCommand() *command.RegisteredCommand {
+	return &command.RegisteredCommand{
+		Name:    "start the Vault server",
+		Command: "serve",
+		Help:    ``,
+		Entry:   &ServeCommand{},
+	}
 }

@@ -5,11 +5,15 @@ package add
 
 import (
 	"github.com/adjspecies/vault/cmd/vault/commands/command"
+	"github.com/adjspecies/vault/config"
 )
 
-type AddSurveyCommand struct{}
+type AddSurveyCommand struct {
+	cfg *config.Config
+}
 
-func (cmd AddSurveyCommand) Init(args []string) error {
+func (cmd AddSurveyCommand) Init(cfg *config.Config, args []string) error {
+	cmd.cfg = cfg
 	return nil
 }
 
@@ -19,8 +23,8 @@ func (cmd AddSurveyCommand) Run() error {
 
 func NewAddSurveyCommand() *command.RegisteredCommand {
 	return &command.RegisteredCommand{
-		Name:    "Add source to source",
-		Command: "add-source-to-source",
+		Name:    "Add a survey",
+		Command: "add-survey",
 		Help:    ``,
 		Entry:   AddSurveyCommand{},
 	}

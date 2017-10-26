@@ -3,8 +3,12 @@
 
 package command
 
+import (
+	"github.com/adjspecies/vault/config"
+)
+
 type Command interface {
-	Init([]string) error
+	Init(*config.Config, []string) error
 	Run() error
 }
 

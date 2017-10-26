@@ -5,15 +5,19 @@ package hierarchy
 
 import (
 	"github.com/adjspecies/vault/cmd/vault/commands/command"
+	"github.com/adjspecies/vault/config"
 )
 
 // AddSurveyToSourceCommand controls adding one source to another in the
 // hierarchy. This only adds a child to a parent; all other relationships are
 // sussed out by Vault.
-type AddSurveyToSourceCommand struct{}
+type AddSurveyToSourceCommand struct {
+	cfg *config.Config
+}
 
 // Init initializes the command.
-func (cmd AddSurveyToSourceCommand) Init(args []string) error {
+func (cmd AddSurveyToSourceCommand) Init(cfg *config.Config, args []string) error {
+	cmd.cfg = cfg
 	return nil
 }
 
@@ -26,8 +30,8 @@ func (cmd AddSurveyToSourceCommand) Run() error {
 // the info required by the subcommand system.
 func NewAddSurveyToSourceCommand() *command.RegisteredCommand {
 	return &command.RegisteredCommand{
-		Name:    "Add source to source",
-		Command: "add-source-to-source",
+		Name:    "Add a survey to source",
+		Command: "add-survey-to-source",
 		Help:    ``,
 		Entry:   AddSurveyToSourceCommand{},
 	}
@@ -36,10 +40,13 @@ func NewAddSurveyToSourceCommand() *command.RegisteredCommand {
 // RemoveSurveyFromSourceCommand controls removing one source from another in
 // the hierarchy. This only adds a child to a parent; all other relationships
 // are sussed out by Vault.
-type RemoveSurveyFromSourceCommand struct{}
+type RemoveSurveyFromSourceCommand struct {
+	cfg *config.Config
+}
 
 // Init initializes the command.
-func (cmd RemoveSurveyFromSourceCommand) Init(args []string) error {
+func (cmd RemoveSurveyFromSourceCommand) Init(cfg *config.Config, args []string) error {
+	cmd.cfg = cfg
 	return nil
 }
 
@@ -52,8 +59,8 @@ func (cmd RemoveSurveyFromSourceCommand) Run() error {
 // of the info required by the subcommand system.
 func NewRemoveSurveyFromSourceCommand() *command.RegisteredCommand {
 	return &command.RegisteredCommand{
-		Name:    "Add source to source",
-		Command: "add-source-to-source",
+		Name:    "Remove a survey from a dource",
+		Command: "remove-survey-from-source",
 		Help:    ``,
 		Entry:   RemoveSurveyFromSourceCommand{},
 	}

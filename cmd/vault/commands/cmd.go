@@ -26,7 +26,7 @@ command line.
 
 Common commands:
 
-	serve					    Start the Vault server
+    serve                       Start the Vault server
     add-source                  Adds a data source
     add-survey                  Adds a dataset
     add-source-to-source        Adds an existing source to a hierarchy
@@ -41,26 +41,18 @@ Example help commands:
     vault help add-source
 `
 
-var specifyConfig = `Could not load config file.
-
-Vault requires a YAML configuration file. This may live anywhere, and is
-specified through an environment variable, VAULT_CONFIG.
-
-To run a vault command, you may set the environment variable globally, or run:
-
-	VAULT_CONFIG=path/to/config.yaml vault <command>
-
-	# Or, for fish:
-	env VAULT_CONFIG=path/to/config.yaml vault <command>`
-
-var registeredCommands map[string]*command.RegisteredCommand
+var registeredCommands = make(map[string]*command.RegisteredCommand)
+var commandList []string
 
 func registerCommand(cmd *command.RegisteredCommand) {
+	log.Debugf("registering command %s", cmd.Command)
 	registeredCommands[cmd.Command] = cmd
+	commandList = append(commandList, cmd.Command)
 }
 
 // RegisterCommands adds subcommands to the registry of available commands.
 func RegisterCommands() {
+	log.Debug("registering commands")
 	registerCommand(add.NewAddSourceCommand())
 	registerCommand(add.NewAddSurveyCommand())
 	registerCommand(hierarchy.NewAddSourceToSourceCommand())
@@ -72,63 +64,39 @@ func RegisterCommands() {
 
 // Main takes a command and a list of arguments and attempts to run the matching
 // subcommand, using those arguments.
-func Main(command string, args []string) {
+func Main(cfg *config.Config, command string, args []string) {
+	log = logging.Logger()
 	RegisterCommands()
-
-	cfg, err := config.Read(os.Getenv("VAULT_CONFIG"))
-	if err != nil {
-		fmt.Fprintln(os.Stderr, specifyConfig)
-		os.Exit(1)
-	}
-	if errSetup := logging.Setup(cfg.LogLevel); errSetup != nil {
-		fmt.Fprintln(os.Stderr, "could not set up logging")
-		os.Exit(2)
-	}
-	log = logging.Logger()
-	defer log.Sync()
-
-	// Setup logging
-	level, err := logging.LevelFromString("debug")
-	if err != nil {
-		fmt.Fprint(os.Stderr, "unable to set log level: debug")
-		os.Exit(3)
-	}
-	if errSetup := logging.Setup(level); errSetup != nil {
-		fmt.Fprint(os.Stderr, "unable to set up logging")
-		os.Exit(4)
-	}
-	log = logging.Logger()
-	defer log.Sync()
-	log.Info("logging set up")
 
 	// Run help if needed
 	if command == "help" {
-		help(args[0])
+		help(args)
 	}
-
 	// Attempt to find the requested command.
 	cmd, ok := registeredCommands[command]
 	if !ok {
-		log.Fatalf("could not find command %s", command)
-		os.Exit(5)
+		log.Errorf("could not find command %s", command)
+		os.Exit(3)
 	}
 	// Initialize and run the command.
-	cmd.Entry.Init(args)
+	cmd.Entry.Init(cfg, args)
 	cmd.Entry.Run()
 }
 
-func help(topic string) {
+func help(args []string) {
 	// If we have no topic, print the master help.
-	if topic == "" {
+	if len(args) == 0 {
 		fmt.Print(masterHelp)
+		log.Sync()
 		os.Exit(0)
 	}
+	topic := args[0]
 
 	// If the topic was 'commands', list the commands and their names.
 	if topic == "commands" {
 		w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', 0)
-		for command, entry := range registeredCommands {
-			fmt.Fprintf(w, "%s\t%s", command, entry.Name)
+		for _, command := range commandList {
+			fmt.Fprintf(w, "%s\t%s\n", command, registeredCommands[command].Name)
 		}
 		w.Flush()
 		os.Exit(0)
@@ -137,8 +105,8 @@ func help(topic string) {
 	// Otherwise, attempt to print the help for a given command.
 	cmd, ok := registeredCommands[topic]
 	if !ok {
-		log.Fatalf("could not find command %s", topic)
-		os.Exit(5)
+		log.Errorf("could not find command %s", topic)
+		os.Exit(3)
 	}
 	fmt.Print(cmd.Help)
 	os.Exit(0)
