@@ -28,10 +28,10 @@ func (cmd AddSurveyToSourceCommand) Run() error {
 // the info required by the subcommand system.
 func NewAddSurveyToSourceCommand() *command.RegisteredCommand {
 	return &command.RegisteredCommand{
-		Name:    "Add a survey to source",
+		Name:    "Add a survey to a source",
 		Command: "add-survey-to-source",
 		Help:    ``,
-		Entry:   AddSurveyToSourceCommand{},
+		Entry:   &AddSurveyToSourceCommand{},
 	}
 }
 
@@ -58,6 +58,6 @@ func NewRemoveSurveyFromSourceCommand() *command.RegisteredCommand {
 		Name:    "Remove a survey from a dource",
 		Command: "remove-survey-from-source",
 		Help:    ``,
-		Entry:   RemoveSurveyFromSourceCommand{},
+		Entry:   &RemoveSurveyFromSourceCommand{},
 	}
 }

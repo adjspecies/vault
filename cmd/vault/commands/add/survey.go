@@ -8,24 +8,26 @@ import (
 	"github.com/adjspecies/vault/config"
 )
 
-type AddSurveyCommand command.BaseCommand
+// SurveyCommand allows adding a survey to the vault.
+type SurveyCommand command.BaseCommand
 
 // Init initializes the command
-func (cmd AddSurveyCommand) Init(cfg *config.Config, args []string) error {
+func (cmd SurveyCommand) Init(cfg *config.Config, args []string) error {
 	cmd.Config = cfg
 	return nil
 }
 
 // Run runs the command
-func (cmd AddSurveyCommand) Run() error {
+func (cmd SurveyCommand) Run() error {
 	return nil
 }
 
-func NewAddSurveyCommand() *command.RegisteredCommand {
+// NewSurveyCommand returns a RegisteredCommand wrapping a SurveyCommand.
+func NewSurveyCommand() *command.RegisteredCommand {
 	return &command.RegisteredCommand{
 		Name:    "Add a survey",
 		Command: "add-survey",
 		Help:    ``,
-		Entry:   AddSurveyCommand{},
+		Entry:   &SurveyCommand{},
 	}
 }

@@ -28,10 +28,10 @@ func (cmd AddSourceToSourceCommand) Run() error {
 // the info required by the subcommand system.
 func NewAddSourceToSourceCommand() *command.RegisteredCommand {
 	return &command.RegisteredCommand{
-		Name:    "Add source to source",
+		Name:    "Add source to a source",
 		Command: "add-source-to-source",
 		Help:    ``,
-		Entry:   AddSourceToSourceCommand{},
+		Entry:   &AddSourceToSourceCommand{},
 	}
 }
 
@@ -58,6 +58,6 @@ func NewRemoveSourceFromSourceCommand() *command.RegisteredCommand {
 		Name:    "Remove a source from a source",
 		Command: "remove-source-from-source",
 		Help:    ``,
-		Entry:   RemoveSourceFromSourceCommand{},
+		Entry:   &RemoveSourceFromSourceCommand{},
 	}
 }

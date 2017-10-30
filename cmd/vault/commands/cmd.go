@@ -46,29 +46,35 @@ Example help commands:
 var registeredCommands = make(map[string]*command.RegisteredCommand)
 var commandList []string
 
-func RegisterCommand(cmd *command.RegisteredCommand) {
+func registerCommand(cmd *command.RegisteredCommand) {
 	log.Debugf("registering command %s", cmd.Command)
 	registeredCommands[cmd.Command] = cmd
 	commandList = append(commandList, cmd.Command)
 }
 
-// RegisterCommands adds subcommands to the registry of available commands.
-func RegisterCommands() {
+// registerCommands adds subcommands to the registry of available commands.
+func registerCommands() {
 	log.Debug("registering commands")
-	RegisterCommand(add.NewAddSourceCommand())
-	RegisterCommand(add.NewAddSurveyCommand())
-	RegisterCommand(hierarchy.NewAddSourceToSourceCommand())
-	RegisterCommand(hierarchy.NewRemoveSourceFromSourceCommand())
-	RegisterCommand(hierarchy.NewAddSurveyToSourceCommand())
-	RegisterCommand(hierarchy.NewRemoveSurveyFromSourceCommand())
-	RegisterCommand(serve.NewServeCommand())
+	registerCommand(add.NewSourceCommand())
+	registerCommand(add.NewSummaryCommand())
+	registerCommand(add.NewSurveyCommand())
+	registerCommand(add.NewResponseCommand())
+	registerCommand(add.NewResponsesCommand())
+	registerCommand(add.NewRespondentCommand())
+	registerCommand(hierarchy.NewAddSourceToSourceCommand())
+	registerCommand(hierarchy.NewRemoveSourceFromSourceCommand())
+	registerCommand(hierarchy.NewAddSummaryToSourceCommand())
+	registerCommand(hierarchy.NewRemoveSummaryFromSourceCommand())
+	registerCommand(hierarchy.NewAddSurveyToSourceCommand())
+	registerCommand(hierarchy.NewRemoveSurveyFromSourceCommand())
+	registerCommand(serve.NewServeCommand())
 }
 
 // Main takes a command and a list of arguments and attempts to run the matching
 // subcommand, using those arguments.
 func Main(cfg *config.Config, command string, args []string) error {
 	log = logging.Logger()
-	RegisterCommands()
+	registerCommands()
 
 	// Run help if needed
 	if command == "help" {

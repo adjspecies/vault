@@ -8,24 +8,26 @@ import (
 	"github.com/adjspecies/vault/config"
 )
 
-type AddSourceCommand command.BaseCommand
+// SourceCommand allows adding a source to the vault.
+type SourceCommand command.BaseCommand
 
 // Init initializes the command.
-func (cmd AddSourceCommand) Init(cfg *config.Config, args []string) error {
+func (cmd SourceCommand) Init(cfg *config.Config, args []string) error {
 	cmd.Config = cfg
 	return nil
 }
 
 // Run runs the command
-func (cmd AddSourceCommand) Run() error {
+func (cmd SourceCommand) Run() error {
 	return nil
 }
 
-func NewAddSourceCommand() *command.RegisteredCommand {
+// NewSourceCommand returns a RegisteredCommand wrapping a SourceCommand.
+func NewSourceCommand() *command.RegisteredCommand {
 	return &command.RegisteredCommand{
 		Name:    "Add source",
 		Command: "add-source",
 		Help:    ``,
-		Entry:   AddSourceCommand{},
+		Entry:   &SourceCommand{},
 	}
 }

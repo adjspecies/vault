@@ -30,40 +30,69 @@ func TestMain(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		// Check the command registry.
-		So(len(commands.GetRegisteredCommands()), ShouldEqual, 7)
+		So(len(commands.GetRegisteredCommands()), ShouldEqual, 13)
 		So(commands.GetCommandList(), ShouldResemble, []string{
 			"add-source",
+			"add-summary",
 			"add-survey",
+			"add-response",
+			"add-responses",
+			"add-respondent",
 			"add-source-to-source",
 			"remove-source-from-source",
+			"add-summary-to-source",
+			"remove-summary-from-source",
 			"add-survey-to-source",
 			"remove-survey-from-source",
 			"serve",
 		})
 	})
 
-	SkipConvey("It should run commands", t, func() {
-		cmd := &TestCommand{}
-		testCommand := &command.RegisteredCommand{
-			Name:    "command for testing",
-			Command: "test-command",
-			Help:    "test command help",
-			Entry:   cmd,
-		}
-		commands.RegisterCommand(testCommand)
+	Convey("It should run commands", t, func() {
 		Convey("It should run without args", func() {
-			commands.Main(defaultConfig, "test-command", []string{})
+			cmd := createCommand()
+			err := commands.Main(defaultConfig, "test-command", []string{})
+			So(err, ShouldBeNil)
 			So(cmd.InitCalled, ShouldEqual, 1)
-			So(cmd.InitArgs, ShouldResemble, [][]string{})
+			So(cmd.InitArgs, ShouldResemble, [][]string{{}})
 			So(cmd.RunCalled, ShouldEqual, 1)
 		})
 		Convey("It should run with args", func() {
-			commands.Main(defaultConfig, "test-command", []string{})
+			cmd := createCommand()
+			args := []string{"the", "doctor"}
+			err := commands.Main(defaultConfig, "test-command", args)
+			So(err, ShouldBeNil)
 			So(cmd.InitCalled, ShouldEqual, 1)
-			So(cmd.InitArgs, ShouldResemble, [][]string{})
+			So(cmd.InitArgs[0], ShouldResemble, args)
 			So(cmd.RunCalled, ShouldEqual, 1)
 		})
+		Convey("It should return an error from Run", func() {
+			cmd := createCommand()
+			cmd.RunError = "bad-wolf"
+			err := commands.Main(defaultConfig, "test-command", []string{})
+			So(err, ShouldBeError)
+			So(err.Error(), ShouldEqual, "Run: bad-wolf")
+		})
+		Convey("It should return an error from Init", func() {
+			cmd := createCommand()
+			cmd.InitError = "bad-wolf"
+			err := commands.Main(defaultConfig, "test-command", []string{})
+			So(err, ShouldBeError)
+			So(err.Error(), ShouldEqual, "Init: bad-wolf")
+		})
 	})
+}
+
+func createCommand() *TestCommand {
+	cmd := &TestCommand{}
+	testCommand := &command.RegisteredCommand{
+		Name:    "command for testing",
+		Command: "test-command",
+		Help:    "test command help",
+		Entry:   cmd,
+	}
+	commands.RegisterCommand(testCommand)
+	return cmd
 }
 
 type TestCommand struct {
@@ -75,20 +104,20 @@ type TestCommand struct {
 	RunError   string
 }
 
-func (cmd TestCommand) Init(cfg *config.Config, args []string) error {
+func (cmd *TestCommand) Init(cfg *config.Config, args []string) error {
 	cmd.Config = cfg
 	cmd.InitCalled++
 	cmd.InitArgs = append(cmd.InitArgs, args)
 	if cmd.InitError != "" {
-		return fmt.Errorf(cmd.InitError)
+		return fmt.Errorf("Init: %s", cmd.InitError)
 	}
 	return nil
 }
 
-func (cmd TestCommand) Run() error {
+func (cmd *TestCommand) Run() error {
 	cmd.RunCalled++
 	if cmd.RunError != "" {
-		return fmt.Errorf(cmd.InitError)
+		return fmt.Errorf("Run: %s", cmd.RunError)
 	}
 	return nil
 }

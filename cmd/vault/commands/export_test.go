@@ -3,14 +3,22 @@
 
 package commands
 
-import(
-    "github.com/adjspecies/vault/cmd/vault/commands/command"
+import (
+	"github.com/adjspecies/vault/cmd/vault/commands/command"
 )
 
 func GetCommandList() []string {
-    return commandList
+	return commandList
 }
 
 func GetRegisteredCommands() map[string]*command.RegisteredCommand {
-    return registeredCommands
+	return registeredCommands
+}
+
+func RegisterCommand(cmd *command.RegisteredCommand) {
+	registerCommand(cmd)
+}
+
+func RegisterCommands() {
+	registerCommands()
 }
