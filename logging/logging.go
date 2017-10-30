@@ -12,9 +12,16 @@ import (
 var logger *zap.SugaredLogger
 
 // Setup builds a sugared logger for use throughout the application.
-func Setup(level zapcore.Level) error {
-	cfg := zap.NewProductionConfig()
-	cfg.Level.SetLevel(level)
+func Setup(environment string, level zapcore.Level) error {
+	var cfg zap.Config
+	if environment == "production" {
+		cfg = zap.NewProductionConfig()
+	} else {
+		cfg = zap.NewDevelopmentConfig()
+	}
+	if level != zapcore.Level(-10) {
+		cfg.Level.SetLevel(level)
+	}
 	log, err := cfg.Build()
 	if err != nil {
 		return errgo.Mask(err)
@@ -23,10 +30,9 @@ func Setup(level zapcore.Level) error {
 	return nil
 }
 
-// Logger retrieves the built logger
 func Logger() *zap.SugaredLogger {
 	if logger == nil {
-		Setup(zapcore.InfoLevel)
+		Setup("development", zapcore.Level(-10))
 	}
 	return logger
 }

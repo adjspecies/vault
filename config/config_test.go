@@ -25,14 +25,29 @@ var readTests = []struct {
 	{
 		about: "when the config is valid",
 		content: mustMarshalYAML(map[string]interface{}{
-			"host":      "localhost",
-			"port":      5542,
-			"log-level": "info",
+			"host":        "localhost",
+			"port":        5542,
+			"log-level":   "info",
+			"environment": "production",
 		}),
 		expectedConfig: &config.Config{
-			Host:     "localhost",
-			Port:     5542,
-			LogLevel: zapcore.InfoLevel,
+			Host:        "localhost",
+			Port:        5542,
+			LogLevel:    zapcore.InfoLevel,
+			Environment: "production",
+		},
+	},
+	{
+		about: "and default environment to development",
+		content: mustMarshalYAML(map[string]interface{}{
+			"host": "localhost",
+			"port": 5542,
+		}),
+		expectedConfig: &config.Config{
+			Host:        "localhost",
+			Port:        5542,
+			LogLevel:    zapcore.Level(-10),
+			Environment: "development",
 		},
 	},
 	{
@@ -47,6 +62,16 @@ var readTests = []struct {
 			"not": 42,
 		}),
 		expectedError: "missing fields host, port",
+	},
+	{
+		about: "environment is invalid",
+		content: mustMarshalYAML(map[string]interface{}{
+			"host":        "localhost",
+			"port":        5542,
+			"log-level":   "info",
+			"environment": "bad-wolf",
+		}),
+		expectedError: "environment must be `development` or `production`",
 	},
 }
 

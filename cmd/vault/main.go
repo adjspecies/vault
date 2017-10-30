@@ -42,7 +42,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, specifyConfig, err)
 		os.Exit(1)
 	}
-	if errSetup := logging.Setup(cfg.LogLevel); errSetup != nil {
+	if errSetup := logging.Setup(cfg.Environment, cfg.LogLevel); errSetup != nil {
 		fmt.Fprintln(os.Stderr, "could not set up logging")
 		os.Exit(2)
 	}
@@ -50,5 +50,8 @@ func main() {
 	defer log.Sync()
 	log.Debug("logging set up")
 
-	commands.Main(cfg, command, args)
+	err = commands.Main(cfg, command, args)
+	if err != nil {
+		log.Fatalf("could not run commands")
+	}
 }

@@ -8,13 +8,15 @@ import (
 	"os"
 	"text/tabwriter"
 
+	"go.uber.org/zap"
+	errgo "gopkg.in/errgo.v1"
+
 	"github.com/adjspecies/vault/cmd/vault/commands/add"
 	"github.com/adjspecies/vault/cmd/vault/commands/command"
 	"github.com/adjspecies/vault/cmd/vault/commands/hierarchy"
 	"github.com/adjspecies/vault/cmd/vault/commands/serve"
 	"github.com/adjspecies/vault/config"
 	"github.com/adjspecies/vault/logging"
-	"go.uber.org/zap"
 )
 
 var log *zap.SugaredLogger
@@ -44,7 +46,7 @@ Example help commands:
 var registeredCommands = make(map[string]*command.RegisteredCommand)
 var commandList []string
 
-func registerCommand(cmd *command.RegisteredCommand) {
+func RegisterCommand(cmd *command.RegisteredCommand) {
 	log.Debugf("registering command %s", cmd.Command)
 	registeredCommands[cmd.Command] = cmd
 	commandList = append(commandList, cmd.Command)
@@ -53,42 +55,49 @@ func registerCommand(cmd *command.RegisteredCommand) {
 // RegisterCommands adds subcommands to the registry of available commands.
 func RegisterCommands() {
 	log.Debug("registering commands")
-	registerCommand(add.NewAddSourceCommand())
-	registerCommand(add.NewAddSurveyCommand())
-	registerCommand(hierarchy.NewAddSourceToSourceCommand())
-	registerCommand(hierarchy.NewRemoveSourceFromSourceCommand())
-	registerCommand(hierarchy.NewAddSurveyToSourceCommand())
-	registerCommand(hierarchy.NewRemoveSurveyFromSourceCommand())
-	registerCommand(serve.NewServeCommand())
+	RegisterCommand(add.NewAddSourceCommand())
+	RegisterCommand(add.NewAddSurveyCommand())
+	RegisterCommand(hierarchy.NewAddSourceToSourceCommand())
+	RegisterCommand(hierarchy.NewRemoveSourceFromSourceCommand())
+	RegisterCommand(hierarchy.NewAddSurveyToSourceCommand())
+	RegisterCommand(hierarchy.NewRemoveSurveyFromSourceCommand())
+	RegisterCommand(serve.NewServeCommand())
 }
 
 // Main takes a command and a list of arguments and attempts to run the matching
 // subcommand, using those arguments.
-func Main(cfg *config.Config, command string, args []string) {
+func Main(cfg *config.Config, command string, args []string) error {
 	log = logging.Logger()
 	RegisterCommands()
 
 	// Run help if needed
 	if command == "help" {
-		help(args)
+		return Help(args)
 	}
 	// Attempt to find the requested command.
 	cmd, ok := registeredCommands[command]
 	if !ok {
-		log.Errorf("could not find command %s", command)
-		os.Exit(3)
+		err := errgo.Newf("could not find command %s", command)
+		log.Errorf(err.Error())
+		return err
 	}
 	// Initialize and run the command.
-	cmd.Entry.Init(cfg, args)
-	cmd.Entry.Run()
+	err := cmd.Entry.Init(cfg, args)
+	if err != nil {
+		return err
+	}
+	err = cmd.Entry.Run()
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func help(args []string) {
+func Help(args []string) error {
 	// If we have no topic, print the master help.
 	if len(args) == 0 {
 		fmt.Print(masterHelp)
-		log.Sync()
-		os.Exit(0)
+		return nil
 	}
 	topic := args[0]
 
@@ -99,15 +108,16 @@ func help(args []string) {
 			fmt.Fprintf(w, "%s\t%s\n", command, registeredCommands[command].Name)
 		}
 		w.Flush()
-		os.Exit(0)
+		return nil
 	}
 
 	// Otherwise, attempt to print the help for a given command.
 	cmd, ok := registeredCommands[topic]
 	if !ok {
-		log.Errorf("could not find command %s", topic)
-		os.Exit(3)
+		err := errgo.Newf("could not find command %s", topic)
+		log.Errorf(err.Error())
+		return err
 	}
 	fmt.Print(cmd.Help)
-	os.Exit(0)
+	return nil
 }

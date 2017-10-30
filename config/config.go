@@ -16,9 +16,10 @@ import (
 
 // Config holds the values within a YAML configuration file
 type Config struct {
-	Host     string        `yaml:"host"`
-	Port     int           `yaml:"port"`
-	LogLevel zapcore.Level `yaml:"log-level"`
+	Host        string        `yaml:"host"`
+	Port        int           `yaml:"port"`
+	Environment string        `yaml:"environment"`
+	LogLevel    zapcore.Level `yaml:"log-level"`
 }
 
 // Read loads a YAML config file into a Config object.
@@ -32,19 +33,21 @@ func Read(path string) (*Config, error) {
 	if err != nil {
 		return nil, errgo.Notef(err, "unable to read config file")
 	}
-	var config Config
+	config := Config{
+		LogLevel: -10,
+	}
 	err = yaml.Unmarshal(data, &config)
 	if err != nil {
 		return nil, errgo.Notef(err, "unable to parse config file")
 	}
-	if err := validate(config); err != nil {
+	if err := config.validate(); err != nil {
 		return nil, errgo.Notef(err, "error validating config file")
 	}
 	return &config, nil
 }
 
 // validate checks that the configuration file provided is valid.
-func validate(c Config) error {
+func (c *Config) validate() error {
 	var missing []string
 	if c.Host == "" {
 		missing = append(missing, "host")
@@ -54,6 +57,13 @@ func validate(c Config) error {
 	}
 	if len(missing) != 0 {
 		return fmt.Errorf("missing fields %s", strings.Join(missing, ", "))
+	}
+	if c.Environment != "" {
+		if !(c.Environment == "development" || c.Environment == "production") {
+			return fmt.Errorf("environment must be `development` or `production`")
+		}
+	} else {
+		c.Environment = "development"
 	}
 	return nil
 }
