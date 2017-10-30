@@ -4,49 +4,54 @@
 package main
 
 import (
-	"flag"
 	"fmt"
-	"net/http"
 	"os"
-	"path/filepath"
 
-	"gopkg.in/errgo.v1"
-
-	"github.com/adjspecies/vault"
+	"github.com/adjspecies/vault/cmd/vault/commands"
 	"github.com/adjspecies/vault/config"
 	"github.com/adjspecies/vault/logging"
 )
 
+var specifyConfig = `%s
+
+Vault requires a YAML configuration file. This may live anywhere, and is
+specified through an environment variable, VAULT_CONFIG.
+
+To run a vault command, you may set the environment variable globally, or run:
+
+	VAULT_CONFIG=path/to/config.yaml vault <command>
+
+	# Or, for fish:
+	env VAULT_CONFIG=path/to/config.yaml vault <command>
+`
+
 func main() {
-	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "usage: %s <config path>\n", filepath.Base(os.Args[0]))
-		flag.PrintDefaults()
-		os.Exit(2)
+	var command string
+	if len(os.Args) < 2 {
+		command = "help"
+	} else {
+		command = os.Args[1]
 	}
-	flag.Parse()
-	if flag.NArg() != 1 {
-		flag.Usage()
+	args := []string{}
+	if len(os.Args) > 2 {
+		args = os.Args[2:]
 	}
-	if err := serve(flag.Arg(0)); err != nil {
-		fmt.Fprintf(os.Stderr, "%v\n", err)
+
+	cfg, err := config.Read(os.Getenv("VAULT_CONFIG"))
+	if err != nil {
+		fmt.Fprintf(os.Stderr, specifyConfig, err)
 		os.Exit(1)
 	}
-}
-
-func serve(configPath string) error {
-	conf, err := config.Read(configPath)
-	if err != nil {
-		return errgo.Notef(err, "cannot load configuration file")
-	}
-	if errSetup := logging.Setup(conf.LogLevel); errSetup != nil {
-		return errgo.Notef(err, "unable to set up logging")
+	if errSetup := logging.Setup(cfg.Environment, cfg.LogLevel); errSetup != nil {
+		fmt.Fprintln(os.Stderr, "could not set up logging")
+		os.Exit(2)
 	}
 	log := logging.Logger()
 	defer log.Sync()
-	handler, err := vault.NewServer()
+	log.Debug("logging set up")
+
+	err = commands.Main(cfg, command, args)
 	if err != nil {
-		return errgo.Notef(err, "Could not create server")
+		log.Fatalf("could not run commands")
 	}
-	log.Infow("starting server", "host", conf.Host, "port", conf.Port)
-	return http.ListenAndServe(fmt.Sprintf("%s:%d", conf.Host, conf.Port), handler)
 }

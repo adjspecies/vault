@@ -1,0 +1,11 @@
+{
+    "type": "source",
+    "description": "This is a test source. It's used for testing.",
+    "link": "http://example.com/survey-source",
+    "surveys": [],
+    "hierarchy": {
+        "parents": [],
+        "siblings": [],
+        "children": []
+    }
+}

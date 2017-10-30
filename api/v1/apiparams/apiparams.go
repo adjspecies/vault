@@ -59,6 +59,7 @@ type ShortSurvey struct {
 	StartDate   time.Time `json:"start_date"`
 	EndDate     time.Time `json:"end_date"`
 	Description string    `json:"description"`
+	Link        url.URL   `json:"link"`
 }
 
 // Survey represents a survey. It has metadata, questions, and a hierarchy.
@@ -82,8 +83,10 @@ type Survey struct {
 
 // SurveyDump is a list of questions and responses for a particular survey.
 type SurveyDump struct {
-	Questions []Question `json:"questions"`
-	Responses []Response `json:"responses"`
+	ShortSurvey
+	ResponseCount int        `json:"response_count"`
+	Questions     []Question `json:"questions"`
+	Responses     []Response `json:"responses"`
 }
 
 // Response represents a single response to a survey. This includes the respondent, their answers, and their actions (touchpoints) from the process of answering the survey.
