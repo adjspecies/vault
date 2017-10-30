@@ -18,10 +18,7 @@ import (
 )
 
 func TestMain(t *testing.T) {
-	err := logging.Setup("development", zapcore.Level(-1))
-	if err != nil {
-		panic(err)
-	}
+	logging.ObserveLogging(zapcore.DebugLevel)
 	defaultConfig := &config.Config{}
 
 	Convey("It should register commands", t, func() {
@@ -80,6 +77,35 @@ func TestMain(t *testing.T) {
 			So(err, ShouldBeError)
 			So(err.Error(), ShouldEqual, "Init: bad-wolf")
 		})
+	})
+}
+
+func TestHelp(t *testing.T) {
+	createCommand()
+	Convey("It should display help for a test command", t, func() {
+		logging.ObserveLogging(zapcore.DebugLevel)
+		err := commands.Help([]string{"test-command"})
+		So(err, ShouldBeNil)
+		So(logging.ObserverLogs().All()[0].Message, ShouldEqual, "listing help for test-command")
+	})
+	Convey("It should error if the command doesn't exist", t, func() {
+		logging.ObserveLogging(zapcore.DebugLevel)
+		err := commands.Help([]string{"bad-wolf"})
+		So(err, ShouldBeError)
+		So(err.Error(), ShouldEqual, "could not find command bad-wolf")
+		So(logging.ObserverLogs().All()[0].Message, ShouldEqual, "could not find command bad-wolf")
+	})
+	Convey("It should list commands and their names", t, func() {
+		logging.ObserveLogging(zapcore.DebugLevel)
+		err := commands.Help([]string{"commands"})
+		So(err, ShouldBeNil)
+		So(logging.ObserverLogs().All()[0].Message, ShouldEqual, "listing commands")
+	})
+	Convey("It should display the master help", t, func() {
+		logging.ObserveLogging(zapcore.DebugLevel)
+		err := commands.Help([]string{})
+		So(err, ShouldBeNil)
+		So(logging.ObserverLogs().All()[0].Message, ShouldEqual, "printing masterHelp")
 	})
 }
 

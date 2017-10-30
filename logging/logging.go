@@ -6,10 +6,13 @@ package logging
 import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	. "go.uber.org/zap/zaptest/observer"
 	errgo "gopkg.in/errgo.v1"
 )
 
 var logger *zap.SugaredLogger
+var observedLogger zapcore.Core
+var logs *ObservedLogs
 
 // Setup builds a sugared logger for use throughout the application.
 func Setup(environment string, level zapcore.Level) error {
@@ -35,4 +38,13 @@ func Logger() *zap.SugaredLogger {
 		Setup("development", zapcore.Level(-10))
 	}
 	return logger
+}
+
+func ObserverLogs() *ObservedLogs {
+	return logs
+}
+
+func ObserveLogging(level zapcore.Level) {
+	observedLogger, logs = New(level)
+	logger = zap.New(observedLogger).With().Sugar()
 }

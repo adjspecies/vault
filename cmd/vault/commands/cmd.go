@@ -100,8 +100,10 @@ func Main(cfg *config.Config, command string, args []string) error {
 }
 
 func Help(args []string) error {
+	log = logging.Logger()
 	// If we have no topic, print the master help.
 	if len(args) == 0 {
+		log.Debug("printing masterHelp")
 		fmt.Print(masterHelp)
 		return nil
 	}
@@ -109,6 +111,7 @@ func Help(args []string) error {
 
 	// If the topic was 'commands', list the commands and their names.
 	if topic == "commands" {
+		log.Debug("listing commands")
 		w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', 0)
 		for _, command := range commandList {
 			fmt.Fprintf(w, "%s\t%s\n", command, registeredCommands[command].Name)
@@ -124,6 +127,7 @@ func Help(args []string) error {
 		log.Errorf(err.Error())
 		return err
 	}
+	log.Debugf("listing help for %s", topic)
 	fmt.Print(cmd.Help)
 	return nil
 }
