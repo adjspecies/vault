@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/adjspecies/vault/internal"
+	"github.com/adjspecies/vault/api/util"
 )
 
 // APIResponse holds a JSON response along with an HTTP status and a message string.
@@ -21,9 +21,9 @@ type responseContent interface{}
 
 // Sluggable is an embedded type to allow for an object to have a type, name, and slug field.
 type Sluggable struct {
-	Type string        `json:"type"`
-	Name string        `json:"string"`
-	Slug internal.Slug `json:"slug"`
+	Type string    `json:"type"`
+	Name string    `json:"string"`
+	Slug util.Slug `json:"slug"`
 }
 
 // ShortSource is the bare necessity required to reference a data source. It may have children.

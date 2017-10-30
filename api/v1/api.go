@@ -7,10 +7,17 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"go.uber.org/zap"
+
+	"github.com/adjspecies/vault/logging"
 )
+
+var log *zap.SugaredLogger
 
 // Register adds handlers for endpoints in the v1 API.
 func Register(r *mux.Router) error {
+	log = logging.Logger()
+	log.Debug("registering endpoint overview")
 	r.HandleFunc("/", Overview)
 	return nil
 }
