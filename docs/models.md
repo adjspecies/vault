@@ -56,6 +56,7 @@
 
 * Question -> Question
 * Response -> Response
+* Options? [Object] (JSON)
 
 ## IListAnswer implements IAnswer
 
