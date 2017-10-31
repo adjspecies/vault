@@ -1,6 +1,7 @@
 // Copyright 2017 [adjective][species], Ltd
 // Licensed under the MIT license, see the LICENSE file for details.
 
+// Package server manages creating the HTTP server for Vault.
 package server
 
 import (
