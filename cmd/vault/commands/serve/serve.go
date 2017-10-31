@@ -7,10 +7,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/adjspecies/vault"
 	"github.com/adjspecies/vault/cmd/vault/commands/command"
 	"github.com/adjspecies/vault/config"
 	"github.com/adjspecies/vault/logging"
+	"github.com/adjspecies/vault/server"
 	errgo "gopkg.in/errgo.v1"
 )
 
@@ -25,7 +25,7 @@ func (cmd *ServeCommand) Init(cfg *config.Config, args []string) error {
 // Run starts the server.
 func (cmd *ServeCommand) Run() error {
 	log := logging.Logger()
-	handler, err := vault.NewServer()
+	handler, err := server.NewServer()
 	if err != nil {
 		return errgo.Notef(err, "Could not create server")
 	}
@@ -33,6 +33,7 @@ func (cmd *ServeCommand) Run() error {
 	return http.ListenAndServe(fmt.Sprintf("%s:%d", cmd.Config.Host, cmd.Config.Port), handler)
 }
 
+// NewServeCommand creates a new registered command for starting the server.
 func NewServeCommand() *command.RegisteredCommand {
 	return &command.RegisteredCommand{
 		Name:    "start the Vault server",

@@ -1,6 +1,11 @@
 // Copyright 2017 [adjective][species], Ltd
 // Licensed under the MIT license, see the LICENSE file for details.
 
+// Package commands manages the command line Vault tool.
+//
+// It allows for subcommands to be loaded into a registry. These are called
+// via the first argument to the `vault` command. It also provides the means to
+// get help on the `vault` command as well as all subcommands.
 package commands
 
 import (
@@ -46,6 +51,7 @@ Example help commands:
 var registeredCommands = make(map[string]*command.RegisteredCommand)
 var commandList []string
 
+// registerCommand adds a single subcommand to the registry of commands.
 func registerCommand(cmd *command.RegisteredCommand) {
 	log.Debugf("registering command %s", cmd.Command)
 	registeredCommands[cmd.Command] = cmd
@@ -99,6 +105,11 @@ func Main(cfg *config.Config, command string, args []string) error {
 	return nil
 }
 
+// Help handles showing help to the user. It accepts a slice of strings. If this
+// is empty, it prints the master help for Vault. If not, it assumes that the
+// first argument is the topic one would want help on. If this is `commands`,
+// it provides a list of commands with their names. Otherwise, it attempts to
+// provide help for the provided command.
 func Help(args []string) error {
 	log = logging.Logger()
 	// If we have no topic, print the master help.

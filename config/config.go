@@ -1,6 +1,11 @@
 // Copyright 2017 [adjective][species], Ltd
 // Licensed under the MIT license, see the LICENSE file for details.
 
+// Package config stores the configuration required for running Vault.
+//
+// Configuration is provided in a YAML file which must be specified via an
+// environment variable. It contains information regarding the DB, the server
+// hosting, logging, etc.
 package config
 
 import (
