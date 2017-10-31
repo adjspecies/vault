@@ -1,6 +1,8 @@
 // Copyright 2017 [adjective][species], Ltd
 // Licensed under the MIT license, see the LICENSE file for details.
 
+// Package apiparams holds the various structs for marshaling/unmarshaling the
+// JSON requests and responses to the v1 API.
 package apiparams
 
 import (

@@ -33,6 +33,7 @@ func (cmd *ServeCommand) Run() error {
 	return http.ListenAndServe(fmt.Sprintf("%s:%d", cmd.Config.Host, cmd.Config.Port), handler)
 }
 
+// NewServeCommand creates a new registered command for starting the server.
 func NewServeCommand() *command.RegisteredCommand {
 	return &command.RegisteredCommand{
 		Name:    "start the Vault server",

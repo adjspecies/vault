@@ -11,6 +11,9 @@ import (
 	"github.com/adjspecies/vault/api"
 )
 
+// NewServer generates a new http.Handler to serve Vault. It constructs the
+// Gorilla Mux router by letting the API package register routes that it knows
+// about.
 func NewServer() (http.Handler, error) {
 	r := mux.NewRouter()
 	if err := api.Register(r); err != nil {
